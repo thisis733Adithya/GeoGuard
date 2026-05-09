@@ -9,6 +9,7 @@ import NavMenu from "./NavMenu";
 const dropdownItems = [
   { href: "/", label: "🏠 Home" },
   { href: "/tourist", label: "🧭 Tourist Dashboard" },
+  { href: "/saved-places", label: "Saved Places" },
   { href: "/risk-zones", label: "⚠️ Risk Zones" },
   { href: "/admin", label: "🛡️ Admin" },
 ];

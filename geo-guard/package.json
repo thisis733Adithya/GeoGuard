@@ -9,6 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@googlemaps/js-api-loader": "^1.16.10",
+    "axios": "^1.13.2",
+    "framer-motion": "^12.23.26",
+    "lucide-react": "^0.468.0",
     "mongoose": "^9.6.1",
     "next": "16.2.6",
     "next-auth": "^4.24.14",

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import IdVerifier from "./IdVerifier";
 import MapPanel from "./MapPanel";
-import NearbyPlaces from "./NearbyPlaces";
+import RecommendationExplorer from "./RecommendationExplorer";
 import StatusBadge from "./StatusBadge";
 import WeatherWidget from "./WeatherWidget";
 
@@ -350,8 +350,8 @@ export default function TouristDashboardClient() {
           {/* Weather */}
           <WeatherWidget location={tourist.lastKnownLocation} />
 
-          {/* Nearby places */}
-          <NearbyPlaces location={tourist.lastKnownLocation} />
+          {/* Tourist recommendations */}
+          <RecommendationExplorer location={tourist.lastKnownLocation} userId={tourist.touristId} />
 
           {/* Active risk zones near tourist */}
           {zones.length > 0 && (

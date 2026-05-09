@@ -1,0 +1,146 @@
+# Geo Guard — Android Conversion Guide
+
+## What Was Created
+
+The Geo Guard web app (Next.js) has been converted to a native Android app using **Expo Router + React Native** with **JavaScript** and **TailwindCSS** (via `twrnc`).
+
+### Architecture
+
+| Web App (Next.js) | Android App (Expo) |
+|---|---|
+| `app/page.js` → Home | `app/(tabs)/index.js` → Home tab |
+| `app/login/page.js` → Login | `app/login.js` → Modal screen |
+| `app/register/page.js` → Register | `app/register.js` → Modal screen |
+| `app/tourist/page.js` → Tourist Dashboard | `app/(tabs)/tourist.js` → Tourist tab |
+| `app/admin/page.js` → Admin Dashboard | `app/(tabs)/admin.js` → Admin tab |
+| `app/alerts/page.js` → Alerts | `app/(tabs)/alerts.js` → Alerts tab |
+| `app/risk-zones/page.js` → Risk Zones | `app/risk-zones.js` → Stack screen |
+| `localStorage` | `AsyncStorage` |
+| `navigator.geolocation` | `expo-location` |
+| CSS variables + Tailwind CSS | `twrnc` (TailwindCSS for RN) |
+| NextAuth sessions | Local admin session storage |
+| `fetch("/api/...")` | `fetch(API_BASE + "/api/...")` |
+
+### New Files Created
+
+```
+geo-guard-android/
+├── lib/
+│   ├── tw.js              # twrnc instance with custom theme
+│   ├── api.js             # API client (all backend endpoints)
+│   ├── storage.js         # AsyncStorage wrapper
+│   └── theme.js           # Dark/light theme context
+├── components/
+│   ├── StatusBadge.js      # Colored status badges
+│   ├── IdVerifier.js       # Tourist ID verification
+│   ├── WeatherWidget.js    # Weather + safety tips
+│   └── NearbyPlaces.js     # Nearby restaurants/hotels
+├── app/
+│   ├── _layout.js          # Root Stack navigator
+│   ├── login.js            # Admin login modal
+│   ├── register.js         # Tourist registration modal
+│   ├── risk-zones.js       # Risk zones screen
+│   └── (tabs)/
+│       ├── _layout.js      # Bottom tab navigator
+│       ├── index.js        # Home screen
+│       ├── tourist.js      # Tourist dashboard
+│       ├── admin.js        # Admin control room
+│       └── alerts.js       # Alert history
+├── package.json            # Updated dependencies
+├── app.json                # Expo config with permissions
+└── tsconfig.json           # Updated for JS support
+```
+
+## ⚠️ REQUIRED: Manual Cleanup Steps
+
+> [!IMPORTANT]
+> You **must** delete these old TypeScript files before running the app. They will cause duplicate route errors with Expo Router.
+
+```
+DELETE these files:
+├── app/_layout.tsx
+├── app/modal.tsx
+├── app/(tabs)/_layout.tsx
+├── app/(tabs)/index.tsx
+├── app/(tabs)/explore.tsx
+├── components/external-link.tsx
+├── components/haptic-tab.tsx
+├── components/hello-wave.tsx
+├── components/parallax-scroll-view.tsx
+├── components/themed-text.tsx
+├── components/themed-view.tsx
+├── hooks/use-color-scheme.ts
+├── hooks/use-color-scheme.web.ts
+├── hooks/use-theme-color.ts
+├── constants/theme.ts
+├── expo-env.d.ts
+```
+
+Run this in your terminal:
+```bash
+del app\_layout.tsx app\modal.tsx "app\(tabs)\_layout.tsx" "app\(tabs)\index.tsx" "app\(tabs)\explore.tsx"
+del components\external-link.tsx components\haptic-tab.tsx components\hello-wave.tsx
+del components\parallax-scroll-view.tsx components\themed-text.tsx components\themed-view.tsx
+del hooks\use-color-scheme.ts hooks\use-color-scheme.web.ts hooks\use-theme-color.ts
+del constants\theme.ts expo-env.d.ts
+```
+
+## How to Run
+
+### Step 1: Install Dependencies
+```bash
+cd d:\Fusion Techathon\geo-guard-android
+npm install
+```
+
+### Step 2: Start the Web Backend
+The Android app calls the Next.js API server. Start it first:
+```bash
+cd d:\Fusion Techathon\geo-guard
+npm run dev
+```
+
+### Step 3: Configure API URL
+Edit `lib/api.js` line 4:
+- **Android Emulator:** `http://10.0.2.2:3000` (default — maps to host localhost)
+- **Physical device (same WiFi):** `http://<YOUR_PC_IP>:3000` (e.g., `http://192.168.1.5:3000`)
+
+### Step 4: Run the App
+```bash
+cd d:\Fusion Techathon\geo-guard-android
+npx expo start --android
+```
+
+## Key Adaptations
+
+| Web Pattern | Android Replacement |
+|---|---|
+| `Link` from next/link | `router.push()` from expo-router |
+| Tailwind `className` | `style={tw\`...\`}` from twrnc |
+| CSS variables (`var(--bg)`) | Inline colors from theme context |
+| `localStorage` | `@react-native-async-storage/async-storage` |
+| `navigator.geolocation` | `expo-location` with permission requests |
+| Google Maps JS SDK | Removed (visual map replaced with data views) |
+| NextAuth session/OAuth | Local admin session + credential auth fallback |
+| HTML `<form>` + `<input>` | React Native `TextInput` + `TouchableOpacity` |
+| CSS hover/translate effects | Removed (not applicable on mobile) |
+| `<table>` for tourist list | Card-based scrollable list |
+
+## Features Preserved
+
+✅ Tourist registration with all fields  
+✅ Digital Tourist ID generation + SHA-256 hash  
+✅ Tourist ID verification  
+✅ Live location sharing (via device GPS)  
+✅ Safety score display  
+✅ Tracking consent toggle  
+✅ SOS Panic button (with confirmation dialog)  
+✅ Test risk zone creation  
+✅ Weather widget  
+✅ Nearby places (food/stay)  
+✅ Alert history with severity badges  
+✅ Admin dashboard with metrics  
+✅ Admin tabs (overview/tourists/alerts/zones)  
+✅ Dark/Light theme toggle  
+✅ Auto-refreshing data (4-5 second intervals)  
+✅ Admin auth guard  
